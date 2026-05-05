@@ -39,9 +39,9 @@ def load_user(user_id):
 # ==============================
 # LOAD MODEL FILES
 # ==============================
-scaler = joblib.load(open("scaler.pkl", "rb"))
-features = joblib.load(open("feature_list.pkl", "rb"))
-model = joblib.load(open("XGBoost.pkl", "rb"))
+scaler = joblib.load(open("scaler.joblib", "rb"))
+features = joblib.load(open("feature_list.joblib", "rb"))
+model = joblib.load(open("XGBoost.joblib", "rb"))
 
 # ==============================
 # LOAD DATA
