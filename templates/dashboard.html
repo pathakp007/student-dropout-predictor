@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard – IILM Dropout System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --cream: #faf8f4;
+            --white: #ffffff;
+            --navy: #1a3a5c;
+            --sky: #4a90d9;
+            --sky-light: #e8f2fb;
+            --gold: #c8973a;
+            --gold-light: #fdf4e3;
+            --text: #2c3e50;
+            --muted: #7a8fa6;
+            --border: #dde8f0;
+            --shadow: 0 4px 24px rgba(26,58,92,0.10);
+            --shadow-lg: 0 12px 48px rgba(26,58,92,0.14);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            margin: 0;
+        }
+
+        /* NAV */
+        .top-nav {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(26,58,92,0.06);
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-brand img { height: 36px; border-radius: 6px; }
+        .nav-brand span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--navy);
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-left: 4px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { background: var(--sky-light); color: var(--sky); }
+
+        /* PAGE HEADER */
+        .page-header {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e8f2fb 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 36px 0;
+        }
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--navy);
+            font-size: 2rem;
+            margin-bottom: 6px;
+        }
+        .page-header p { color: var(--muted); font-size: 0.95rem; }
+
+        .main-content {
+            max-width: 1100px;
+            margin: 36px auto;
+            padding: 0 20px 60px;
+        }
+
+        /* KPI CARDS */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .kpi-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 24px 22px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+        .kpi-card.total::before { background: var(--navy); }
+        .kpi-card.high::before { background: #e74c3c; }
+        .kpi-card.medium::before { background: #e67e22; }
+        .kpi-card.low::before { background: #27ae60; }
+
+        .kpi-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .kpi-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .kpi-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .kpi-card.total .kpi-icon { background: #e8f0fa; }
+        .kpi-card.high .kpi-icon { background: #fdf0ef; }
+        .kpi-card.medium .kpi-icon { background: #fef6ed; }
+        .kpi-card.low .kpi-icon { background: #edfaf3; }
+
+        .kpi-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .kpi-card.high .kpi-value { color: #e74c3c; }
+        .kpi-card.medium .kpi-value { color: #e67e22; }
+        .kpi-card.low .kpi-value { color: #27ae60; }
+        .kpi-pct {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* CHARTS GRID */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-card {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .chart-card h5 {
+            font-family: 'Playfair Display', serif;
+            color: var(--navy);
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+        .chart-container { height: 240px; position: relative; }
+
+        /* BOTTOM ROW */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .insight-card {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .insight-card h5 {
+            font-family: 'Playfair Display', serif;
+            color: var(--navy);
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .insight-item:last-child { border-bottom: none; }
+        .insight-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .insight-dot.red { background: #e74c3c; }
+        .insight-dot.orange { background: #e67e22; }
+        .insight-dot.green { background: #27ae60; }
+        .insight-text { font-size: 0.9rem; color: var(--text); flex: 1; }
+        .insight-val { font-weight: 600; color: var(--navy); font-size: 0.9rem; }
+
+        .action-card {
+            background: linear-gradient(135deg, var(--navy) 0%, #2a5a8c 100%);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+        .action-card h5 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+        .action-card p { color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 24px; }
+
+        .btn-white {
+            background: white;
+            color: var(--navy);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .btn-white:hover { background: var(--sky-light); color: var(--sky); }
+        .btn-ghost {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.2); color: white; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+    <div class="nav-brand">
+        <img src="{{ url_for('static', filename='image/iilm.png') }}" alt="IILM">
+        <span>IILM Dropout Predictor</span>
+    </div>
+    <div class="nav-links">
+        <a href="/">Predict</a>
+        <a href="/dashboard" class="active">Dashboard</a>
+    </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+    <div class="container">
+        <h1>📊 Analytics Dashboard</h1>
+        <p>Overview of student dropout risk distribution across the institution</p>
+    </div>
+</div>
+
+<div class="main-content">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+        <div class="kpi-card total">
+            <div class="kpi-top">
+                <span class="kpi-label">Total Students</span>
+                <div class="kpi-icon">🎓</div>
+            </div>
+            <div class="kpi-value">{{ total }}</div>
+            <div class="kpi-pct">All enrolled students</div>
+        </div>
+        <div class="kpi-card high">
+            <div class="kpi-top">
+                <span class="kpi-label">High Risk</span>
+                <div class="kpi-icon">⚠️</div>
+            </div>
+            <div class="kpi-value">{{ high }}</div>
+            <div class="kpi-pct">≥ 75% dropout probability</div>
+        </div>
+        <div class="kpi-card medium">
+            <div class="kpi-top">
+                <span class="kpi-label">Medium Risk</span>
+                <div class="kpi-icon">🔶</div>
+            </div>
+            <div class="kpi-value">{{ medium }}</div>
+            <div class="kpi-pct">40–74% dropout probability</div>
+        </div>
+        <div class="kpi-card low">
+            <div class="kpi-top">
+                <span class="kpi-label">Low Risk</span>
+                <div class="kpi-icon">✅</div>
+            </div>
+            <div class="kpi-value">{{ low }}</div>
+            <div class="kpi-pct">< 40% dropout probability</div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h5>📊 Risk Category Comparison</h5>
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h5>🥧 Risk Distribution</h5>
+            <div class="chart-container">
+                <canvas id="doughnutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="bottom-row">
+        <div class="insight-card">
+            <h5>📋 Risk Breakdown</h5>
+            <div class="insight-item">
+                <div class="insight-dot red"></div>
+                <span class="insight-text">High Risk Students (≥75%)</span>
+                <span class="insight-val">{{ high }} students</span>
+            </div>
+            <div class="insight-item">
+                <div class="insight-dot orange"></div>
+                <span class="insight-text">Medium Risk Students (40–74%)</span>
+                <span class="insight-val">{{ medium }} students</span>
+            </div>
+            <div class="insight-item">
+                <div class="insight-dot green"></div>
+                <span class="insight-text">Low Risk Students (&lt;40%)</span>
+                <span class="insight-val">{{ low }} students</span>
+            </div>
+        </div>
+
+        <div class="action-card">
+            <h5>Quick Actions</h5>
+            <p>Take action on your student data</p>
+            <a href="/" class="btn-white">🎯 New Prediction</a>
+            <a href="/logout" class="btn-ghost">🚪 Sign Out</a>
+        </div>
+    </div>
+
+</div>
+
+<!-- SAFE JSON -->
+<script id="chart-data" type="application/json">
+{{ {"high": high, "medium": medium, "low": low, "total": total} | tojson }}
+</script>
+
+<script>
+const d = JSON.parse(document.getElementById("chart-data").textContent);
+
+// BAR CHART
+new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+        labels: ["High Risk", "Medium Risk", "Low Risk"],
+        datasets: [{
+            label: "Students",
+            data: [d.high, d.medium, d.low],
+            backgroundColor: ["rgba(231,76,60,0.85)", "rgba(230,126,34,0.85)", "rgba(39,174,96,0.85)"],
+            borderRadius: 8,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: "#f0f0f0" }, ticks: { color: "#7a8fa6" } }
+        }
+    }
+});
+
+// DOUGHNUT
+new Chart(document.getElementById("doughnutChart"), {
+    type: "doughnut",
+    data: {
+        labels: ["High Risk", "Medium Risk", "Low Risk"],
+        datasets: [{
+            data: [d.high, d.medium, d.low],
+            backgroundColor: ["#e74c3c", "#e67e22", "#27ae60"],
+            borderWidth: 0,
+            hoverOffset: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "65%",
+        plugins: {
+            legend: {
+                position: "bottom",
+                labels: { padding: 20, color: "#2c3e50", font: { family: "DM Sans" } }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

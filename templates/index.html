@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predict – IILM Dropout System</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --cream: #faf8f4;
+            --white: #ffffff;
+            --navy: #1a3a5c;
+            --sky: #4a90d9;
+            --sky-light: #e8f2fb;
+            --gold: #c8973a;
+            --text: #2c3e50;
+            --muted: #7a8fa6;
+            --border: #dde8f0;
+            --shadow-lg: 0 12px 48px rgba(26,58,92,0.14);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* NAV */
+        .top-nav {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(26,58,92,0.06);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-brand img {
+            height: 36px;
+            border-radius: 6px;
+        }
+
+        .nav-brand span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: var(--sky-light);
+            color: var(--sky);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .logout-btn {
+            border: 1.5px solid var(--border);
+            background: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            border-color: var(--sky);
+            color: var(--sky);
+        }
+
+        /* HEADER */
+        .page-header {
+            background: linear-gradient(135deg, var(--navy), #2a5a8c);
+            padding: 48px 0 56px;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+        }
+
+        /* MAIN */
+        .main-content {
+            max-width: 960px;
+            margin: -28px auto 60px;
+            padding: 0 20px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: var(--cream);
+
+            /* ✅ FIXED WARNING HERE */
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--sky);
+            background: white;
+            outline: none;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .form-footer {
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .predict-btn {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .predict-btn:hover {
+            background: var(--sky);
+        }
+
+        .alert-danger {
+            background: #fff0f0;
+            color: #c0392b;
+            padding: 12px;
+            margin: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+    <div class="nav-brand">
+        <img src="{{ url_for('static', filename='image/iilm.png') }}">
+        <span>IILM Dropout Predictor</span>
+    </div>
+
+    <div class="nav-links">
+        <a href="/" class="active">Predict</a>
+        <a href="/dashboard">Dashboard</a>
+    </div>
+
+    <div class="nav-user">
+        <span>{{ user.name if user else '' }}</span>
+        <a href="/logout"><button class="logout-btn">Sign Out</button></a>
+    </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header text-center">
+    <h1>🎓 Student Dropout Prediction</h1>
+    <p>Enter student details to assess risk</p>
+</div>
+
+<!-- FORM -->
+<div class="main-content">
+
+    {% if error %}
+    <div class="alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form action="/predict" method="post">
+        <div class="form-card">
+
+            <!-- Academic -->
+            <div class="form-section">
+                <h5 class="section-title">📚 Academic</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label>Sem 1 GPA</label>
+                        <input type="number" step="0.1" name="Sem1_GPA" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Sem 2 GPA</label>
+                        <input type="number" step="0.1" name="Sem2_GPA" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Backlogs</label>
+                        <input type="number" name="Backlogs" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Attendance (%)</label>
+                        <input type="number" name="attendance" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial -->
+            <div class="form-section">
+                <h5 class="section-title">💳 Financial</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label>Fees Paid</label>
+                        <select name="Tuition_fees_up_to_date">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Debtor</label>
+                        <select name="Debtor">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Scholarship</label>
+                        <select name="Scholarship_holder">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student -->
+            <div class="form-section">
+                <h5 class="section-title">👤 Student Info</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label>Age</label>
+                        <input type="number" name="Age_at_enrollment" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Gender</label>
+                        <select name="Gender">
+                            <option value="1">Male</option>
+                            <option value="0">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Roll No</label>
+                        <input type="text" name="roll_number" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model -->
+            <div class="form-section">
+                <h5 class="section-title">🤖 Model</h5>
+                <select name="model">
+                    <option value="xgb">XGBoost</option>
+                    <option value="svm">SVM</option>
+                    <option value="rf">Random Forest</option>
+                    <option value="lda">LDA</option>
+                </select>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <a href="/dashboard">📊 Dashboard</a>
+                <button type="submit" class="predict-btn">Run Prediction →</button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login – IILM University</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #faf8f4;
+            --white: #ffffff;
+            --navy: #1a3a5c;
+            --sky: #4a90d9;
+            --sky-light: #e8f2fb;
+            --gold: #c8973a;
+            --gold-light: #fdf4e3;
+            --text: #2c3e50;
+            --muted: #7a8fa6;
+            --border: #dde8f0;
+            --shadow: 0 8px 40px rgba(26,58,92,0.12);
+        }
+ 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--cream);
+            position: relative;
+            overflow: hidden;
+        }
+ 
+        /* Soft background shapes */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -120px; right: -120px;
+            width: 480px; height: 480px;
+            background: radial-gradient(circle, rgba(74,144,217,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            bottom: -100px; left: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(200,151,58,0.10) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+ 
+        .page-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            max-width: 900px;
+            width: 95%;
+            z-index: 1;
+        }
+ 
+        /* Left branding */
+        .branding {
+            flex: 1;
+            text-align: center;
+        }
+        .branding img {
+            width: 200px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+        .branding h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--navy);
+            line-height: 1.2;
+        }
+        .branding p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-top: 8px;
+            font-weight: 300;
+        }
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .badge {
+            background: var(--sky-light);
+            color: var(--sky);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+ 
+        /* Card */
+        .card {
+            flex: 1;
+            background: var(--white);
+            border-radius: 24px;
+            padding: 44px 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+ 
+        .card-header {
+            margin-bottom: 32px;
+        }
+        .card-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--navy);
+        }
+        .card-header p {
+            color: var(--muted);
+            margin-top: 6px;
+            font-size: 0.9rem;
+        }
+ 
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 7px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text);
+            background: var(--cream);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        input:focus {
+            border-color: var(--sky);
+            box-shadow: 0 0 0 3px rgba(74,144,217,0.12);
+            background: var(--white);
+        }
+ 
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s, transform 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary:hover {
+            background: var(--sky);
+            transform: translateY(-1px);
+        }
+ 
+        .divider {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin: 20px 0;
+            position: relative;
+        }
+        .divider::before, .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: var(--border);
+        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+ 
+        .signup-link {
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--muted);
+        }
+        .signup-link a {
+            color: var(--sky);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .signup-link a:hover { text-decoration: underline; }
+ 
+        .error {
+            background: #fff0f0;
+            color: #c0392b;
+            border: 1px solid #fcc;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            margin-bottom: 16px;
+        }
+        .success {
+            background: #f0fff4;
+            color: #27ae60;
+            border: 1px solid #a9e8bc;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            margin-bottom: 16px;
+        }
+ 
+        @media (max-width: 680px) {
+            .page-wrapper { flex-direction: column; gap: 30px; }
+            .branding { display: none; }
+        }
+    </style>
+</head>
+<body>
+ 
+<div class="page-wrapper">
+    <div class="branding">
+        <img src="/static/image/iilm.png" alt="IILM University">
+        <h1>Student Dropout<br>Prediction System</h1>
+        <p>Powered by Machine Learning</p>
+        <div class="badge-row">
+            <span class="badge">XGBoost</span>
+            <span class="badge">SVM</span>
+            <span class="badge">Random Forest</span>
+        </div>
+    </div>
+ 
+    <div class="card">
+        <div class="card-header">
+            <h2>Welcome back</h2>
+            <p>Sign in to your account to continue</p>
+        </div>
+ 
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+            <div class="success">{{ success }}</div>
+        {% endif %}
+ 
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="your@email.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn-primary">Sign In →</button>
+        </form>
+ 
+        <div class="divider">or</div>
+        <div class="signup-link">
+            Don't have an account? <a href="/signup">Create one</a>
+        </div>
+    </div>
+</div>
+ 
+</body>
+</html>
